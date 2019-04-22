@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <GeoMap />
+    <!-- <GeoMap /> -->
+    <r-map/>
   </div>
 </template>
 
 <script>
-import GeoMap from './components/GeoMap.vue'
+// import GeoMap from './components/GeoMap.vue'
+import rMap from './components/registerMap.vue'
 
 export default {
   name: 'app',
   components: {
-    GeoMap
+    // GeoMap,
+    rMap
   }
 }
 </script>
