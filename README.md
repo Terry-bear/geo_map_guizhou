@@ -1,29 +1,17 @@
 # geo-map
 
+贵州省地图组件demo
+
 ## Project setup
-```
+
+```bash
 yarn install
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+### Run
+
+```bash
+yarn serve
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+> 整合echart和vue的地图组件demo,支持2D和3D
