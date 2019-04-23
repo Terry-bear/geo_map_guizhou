@@ -1,19 +1,22 @@
 <template>
   <div id="app">
     <!-- <GeoMap /> -->
-    <r-map/>
+    <!-- <r-map/> -->
+    <three-map id="container"/>
   </div>
 </template>
 
 <script>
 // import GeoMap from './components/GeoMap.vue'
-import rMap from './components/registerMap.vue'
+// import rMap from './components/registerMap.vue'
+import threeMap from './components/3Dmap.vue'
 
 export default {
   name: 'app',
   components: {
     // GeoMap,
-    rMap
+    // rMap
+    threeMap
   }
 }
 </script>
@@ -26,5 +29,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+#container{
+  display: inline-block;
 }
 </style>
