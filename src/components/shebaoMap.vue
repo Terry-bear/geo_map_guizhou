@@ -4,15 +4,23 @@
     ref="geoMap"
     :style="{height:height,width:width}"
   >
-
   </div>
 </template>
 
 <script>
 import defaultUrl from '@/assets/mspp.png'
+/**
+ * 添加纹理图案,因为echart只支持HTMLimage,所以用原生JS追加并隐藏了image
+ */
 var wenli = document.createElement('img')
+wenli.className = 'wenli'
 wenli.src = defaultUrl
 document.body.appendChild(wenli)
+console.log(document.getElementsByClassName('wenli'))
+for (const imgDom of document.getElementsByClassName('wenli')) {
+  imgDom.style.visibility = 'hidden'
+  imgDom.style.display = 'inline'
+}
 // 城市标点
 const geoCoordMap = {
   '贵阳市': [106.713478, 26.578343],
@@ -25,7 +33,7 @@ const geoCoordMap = {
   '黔东南苗族侗族自治州': [107.977488, 26.583352],
   '黔南布依族苗族自治州': [107.517156, 26.258219]
 }
-var data = [
+const data = [
   { name: '贵阳市', value: 100 },
   { name: '六盘水市', value: 60 },
   { name: '遵义市', value: 60 },
@@ -37,6 +45,17 @@ var data = [
   { name: '黔南布依族苗族自治州', value: 60 }
 ];
 
+const cityAttributeArr = [
+  { name: '贵阳市', color: 1, area: 2 },
+  { name: '六盘水市', color: 1, area: 2 },
+  { name: '遵义市', color: 1, area: 2 },
+  { name: '安顺市', color: 1, area: 2 },
+  { name: '毕节市', color: 1, area: 2 },
+  { name: '铜仁市', color: 1, area: 2 },
+  { name: '黔西南布依族苗族自治州', color: 1, area: 2 },
+  { name: '黔东南苗族侗族自治州', color: 1, area: 2 },
+  { name: '黔南布依族苗族自治州', color: 1, area: 2 }
+]
 // 鼠标hover后地图颜色
 const hoverStyle = {
   type: 'radial',
@@ -86,15 +105,51 @@ export default {
   methods: {
     init() {
       let dm = document
-      console.log(dm.images)
+      let _this = this
+      /**
+       * JSON方式获取地图组件
+       */
       this.$axios({
         url: '/guizhou.json',
         dataType: 'json'
       }).then((res) => {
         this.$echarts.registerMap('guizhou', res.data)
         this.chart = this.$echarts.init(this.$refs.geoMap)
+        let series = [
+            {
+              type: 'map',
+              map: 'guizhou',
+              geoIndex: 0,
+              aspectScale: 1, //长宽比
+              showLegendSymbol: false, // 存在legend时显示
+              label: {
+                normal: {
+                  show: false
+                },
+                emphasis: {
+                  show: false,
+                  textStyle: {
+                    color: '#fff'
+                  }
+                }
+              },
+              roam: true,
+              itemStyle: {
+                normal: {
+                  areaColor: '#031525',
+                  borderColor: '#3B5077',
+                },
+                emphasis: {
+                  areaColor: '#2B91B7'
+                }
+              },
+              animation: false,
+              data: data
+            }
+          ].concat(_this.handleSeries())
+          console.log(series)
         this.chart.setOption({
-          backgroundColor: '#000',
+          // backgroundColor: '#000',
           tooltip: {
             trigger: 'item',
             formatter: function (params) {
@@ -112,15 +167,7 @@ export default {
             padding: 1,
             itemGap: 3,
             inactiveColor: '#77D6F8',
-            data: [{ name: '贵阳市', icon: 'circle' },
-            { name: '六盘水市' },
-            { name: '遵义市' },
-            { name: '安顺市' },
-            { name: '毕节市' },
-            { name: '铜仁市' },
-            { name: '黔西南布依族苗族自治州' },
-            { name: '黔东南苗族侗族自治州' },
-            { name: '黔南布依族苗族自治州' }],
+            data: _this.handleAreaArr('name'),
             textStyle: {
               color: '#F5EB63',
               fontSize: 9
@@ -137,7 +184,6 @@ export default {
                 show: false,
               }
             },
-            roam: true,
             zoom: 1.0,
             regions: [{
               name: '贵阳市',
@@ -258,285 +304,66 @@ export default {
               }
             }]
           },
-          series: [
-            {
-              name: '贵阳市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[0]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '六盘水市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[1]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '遵义市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[2]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '安顺市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[3]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '毕节市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[4]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '铜仁市',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[5]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '黔西南布依族苗族自治州',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[5]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '黔东南苗族侗族自治州',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[6]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            }, {
-              name: '黔南布依族苗族自治州',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              rippleEffect: {
-                scale: 3,
-                brushType: 'stroke'
-              },
-              data: convertData([data[7]]),
-              symbolSize: function (val) {
-                return val[2] / 10;
-              },
-              label: {
-                normal: {
-                  formatter: '{b}',
-                  position: 'right',
-                  show: true
-                },
-                emphasis: {
-                  show: true
-                }
-              },
-              itemStyle: {
-                normal: {
-                  color: '#F5EB62'
-                }
-              }
-            },
-            {
-              type: 'map',
-              map: 'guizhou',
-              geoIndex: 0,
-              aspectScale: 1, //长宽比
-              showLegendSymbol: false, // 存在legend时显示
-              label: {
-                normal: {
-                  show: false
-                },
-                emphasis: {
-                  show: false,
-                  textStyle: {
-                    color: '#fff'
-                  }
-                }
-              },
-              roam: true,
-              itemStyle: {
-                normal: {
-                  areaColor: '#031525',
-                  borderColor: '#3B5077',
-                },
-                emphasis: {
-                  areaColor: '#2B91B7'
-                }
-              },
-              animation: false,
-              data: data
-            }
-          ]
+          series
         })
 
       })
+    },
+    /**
+     * 处理原始数组对象并返回相应可用数组
+     * !注: 参数只能选cityAttributeArr有的key
+     */
+    handleAreaArr(...args) {
+      let tempArr = JSON.parse(JSON.stringify(cityAttributeArr))
+      // 全量idx数组
+      let allIdx = JSON.parse(JSON.stringify(Object.keys(tempArr[0])))
+      let tempIdx = JSON.parse(JSON.stringify(Object.keys(tempArr[0])))
+      for (const allIt of allIdx) {
+        for (const argIt of args) {
+          if (argIt === allIt) tempIdx.splice(tempIdx.indexOf(argIt), 1)
+        }
+      }
+      return tempArr.map((params) => {
+        for (const tIt of tempIdx) {
+          delete params[tIt]
+        }
+        return params
+      }
+      )
+    },
+    handleSeries(){
+      let arr = []
+      this.handleAreaArr('name').forEach((name,idx) => {
+        arr.push({
+              ...name,
+              type: 'effectScatter',
+              coordinateSystem: 'geo',
+              rippleEffect: {
+                scale: 3,
+                brushType: 'stroke'
+              },
+              data: convertData([data[idx]]),
+              symbolSize: function (val) {
+                return val[2] / 10;
+              },
+              label: {
+                normal: {
+                  formatter: '{b}',
+                  position: 'right',
+                  show: true
+                },
+                emphasis: {
+                  show: true
+                }
+              },
+              itemStyle: {
+                normal: {
+                  color: '#F5EB62'
+                }
+              }
+            })
+      })
+      return arr
     }
   },
 }
