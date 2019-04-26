@@ -113,6 +113,7 @@ export default {
         url: '/guizhou.json',
         dataType: 'json'
       }).then((res) => {
+        console.log(res.data)
         this.$echarts.registerMap('guizhou', res.data)
         this.chart = this.$echarts.init(this.$refs.geoMap)
         let series = [

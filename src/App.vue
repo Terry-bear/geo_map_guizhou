@@ -3,7 +3,8 @@
     <!-- <GeoMap /> -->
     <!-- <r-map/> -->
     <!-- <three-map id="container"/> -->
-    <shebao-map/>
+    <!-- <shebao-map/> -->
+    <renzimap/>
   </div>
 </template>
 
@@ -11,7 +12,8 @@
 // import GeoMap from './components/GeoMap.vue'
 // import rMap from './components/registerMap.vue'
 // import threeMap from './components/3Dmap.vue'
-import shebaoMap from './components/shebaoMap.vue'
+// import shebaoMap from './components/shebaoMap.vue'
+import renzimap from './components/renzimap.vue'
 
 export default {
   name: 'app',
@@ -19,7 +21,8 @@ export default {
     // GeoMap,
     // rMap
     // threeMap
-    shebaoMap
+    // shebaoMap
+    renzimap
   }
 }
 </script>
