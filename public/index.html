@@ -6,12 +6,72 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>geo-map</title>
+    <meta charset="UTF-8">
+      <link rel="stylesheet" href="https://gw.alipayobjects.com/os/rmsportal/PqLCOJpqoOUfuPRacUzE.css" />
+    <title>点分布图</title>
+    <style> ::-webkit-scrollbar{display:none;}html,body{overflow:hidden;margin:0;}
+    #map { position:absolute; top:0; bottom: 0; width:100%; }
+    </style>
   </head>
   <body>
     <noscript>
       <strong>We're sorry but geo-map doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app" style="z-index: 99999;"></div>
     <!-- built files will be auto injected -->
+    <div id="map"></div>
+<script>/*Fixing iframe window.innerHeight 0 issue in Safari*/ document.body.clientHeight; </script>
+<script src="https://webapi.amap.com/maps?v=1.4.8&key=15cd8a57710d40c9b7c0e3cc120f1200&plugin=Map3D"></script>
+<script src="https://gw.alipayobjects.com/os/antv/assets/lib/jquery-3.2.1.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.l7-1.0.0/dist/l7.min.js"></script>
+<style>
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+   </style>
+<script>
+    var scene = new L7.Scene({
+      id: 'map',
+      mapStyle: 'dark', // 样式URL
+      center: [106.713478, 26.578343],
+      pitch: 0,
+      zoom: 11
+    });
+
+    function imgLoader() {
+    scene.on('loaded', function() {
+    scene.ImageLayer().source('https://pd-portal-prod.oss-cn-shenzhen.aliyuncs.com/map.png', {
+      extent: [105.713478, 25.578343, 108.713478, 28.578343]
+    }).style({
+      opacity: 1.0
+    }).render();
+  });
+    }
+    // https://pd-portal-prod.oss-cn-shenzhen.aliyuncs.com/map.png
+    setTimeout(() => {
+      imgLoader()
+    }, 8000)
+    
+
+    window.scene = scene;
+    scene.on('loaded', function() {
+    // ./data/mUQPWCYaxOfiSznuANvG.txt
+    $.get('https://pd-portal-prod.oss-cn-shenzhen.aliyuncs.com/mapgeo.txt', function(data) {
+      scene.PointLayer({
+        zIndex: 2
+      }).source(data, {
+        type: 'csv',
+        y: 'lat',
+        x: 'lng'
+      })
+      .size(4.0)
+      .color('#0D408C')
+      .style({
+        stroke: 'rgb(255,255,255)',
+        strokeWidth: 0,
+        opacity: 1.0
+      }).render();
+    });
+  });
+
+  </script>
   </body>
 </html>
